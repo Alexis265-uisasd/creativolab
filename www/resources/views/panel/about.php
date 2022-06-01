@@ -148,11 +148,13 @@
                                                             Characters limit 300
                                                         </small>
                                                     </div>
-                                                    <button type="submit" class="btn btn-primary font-weight-bold">
+                                                    <button type="submit" 
+                                                            class="btn btn-primary font-weight-bold">
                                                         Guardar
                                                     </button>
                                                 </form>
                                             </div>
+                                            
                                         </div>
                                         <div class="card mb-4">
                                             <div class="card-body">
@@ -191,7 +193,7 @@
                                                                        name="link"
                                                                        class="form-control"
                                                                        id="social-networking-form-link"
-                                                                       placeholder="https://www.facebook.com/usuario">
+                                                                       placeholder="https://www.twitter.com/usuario">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -207,13 +209,15 @@
                                                                        name="linkedin"
                                                                        class="form-control"
                                                                        id="social-networking-form-linkedin"
-                                                                       placeholder="https://www.facebook.com/usuario">
+                                                                       placeholder="https://www.linkedin.com/usuario">
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <button type="submit"
+                                                    
+                                                    <button
+                                                    type="submit"
                                                             class="btn btn-primary font-weight-bold"
-                                                            id="social-networking-form-submit">
+                                                            id="social-networking-form-submit">   
                                                         Guardar
                                                     </button>
                                                 </form>
@@ -221,7 +225,6 @@
                                         </div>
                                     </div>
                                 </dic>
-                                s
                             </div>
                             <div class="col-12 mb-5 col-lg-4">
                                 <div class="card m-0 shadow-sm p-0">
@@ -280,8 +283,71 @@
     </div>
     <!-- End of Page Wrapper -->
 
+  
+<!-- SweetAlert2 -->
+<script src="/assets/core/sweetalert2/sweetalert2.js"> </script>
+<!-- Form Submit -->
     <?php include __DIR__ . "/layouts/footer.php" ?>
+ <script>
+    const BASE_URL = "http://localhost";
+    
+    
 
+// POST
+$("#social-networking-form-submit").submit(function(event) {
+    event.preventDefault();
+
+    $(".form-control").removeClass("is-invalid");
+    $(".invalid-feedback").remove();
+
+    var social ={
+        social: $("#social-networking-form-submit").val()
+    }
+
+    $.ajax({
+        type: "POST",
+        url: BASE_URL + " /api/v1/account/settings/social-networking",
+        data: social,
+        dataType: "json",
+        encode: true,
+    }).done(function (data) {
+        console.log(data);
+        if (!data.success) {
+            
+            if (data.errors.social) {
+                $("#social-networking-form-submit").toggleClass("is-invalid");
+                $("#social-networking-form").append( `<div class='invalid-feedback'> ${data.errors.social} </div>`);
+            }
+            if (data.errors.message) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Url no añadido!',
+                    text: data.errors.message
+                });
+            }
+        } else {
+            Swal.fire({
+                icon: 'success',
+                title: 'Url añadida!',
+                text: data.message
+            }).then((result) => {
+                $("#social-networking-form-submit").val("");
+                
+            });
+        }
+    }).fail(function () {
+        Swal.fire({
+            icon: 'error',
+            title: 'Whoops!',
+            text: "Algo salió mal al establecer la conexión con el servidor"
+        });
+    });
+
+});
+        
+        
+        
+        </script>
 </body>
 
 </html>
